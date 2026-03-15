@@ -1,0 +1,280 @@
+:root {
+  --bg-primary: #0b0e11;
+  --bg-secondary: #1e2329;
+  --bg-tertiary: #2b3139;
+  --text-primary: #eaecef;
+  --text-secondary: #848e9c;
+  --green: #0ecb81;
+  --green-bg: rgba(14, 203, 129, 0.1);
+  --red: #f6465d;
+  --red-bg: rgba(246, 70, 93, 0.1);
+  --border: #2b3139;
+  --yellow: #f0b90b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+}
+
+/* Trading page grid layout */
+.trading-page {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  grid-template-rows: auto 1fr auto;
+  gap: 1px;
+  height: 100vh;
+  background-color: var(--border);
+}
+
+.trading-page > * {
+  background-color: var(--bg-primary);
+}
+
+.chart-area {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 400px;
+}
+
+.orderbook-area {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  overflow-y: auto;
+}
+
+.trade-form-area {
+  grid-column: 1;
+  grid-row: 2;
+  padding: 16px;
+}
+
+.trade-history-area {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--yellow);
+}
+
+.header-symbol {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Order Book */
+.orderbook {
+  padding: 8px;
+}
+
+.orderbook-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 0;
+  color: var(--text-secondary);
+}
+
+.orderbook-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.orderbook-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 2px 0;
+  font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  cursor: pointer;
+}
+
+.orderbook-row:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.price-ask {
+  color: var(--red);
+}
+
+.price-bid {
+  color: var(--green);
+}
+
+.orderbook-spread {
+  text-align: center;
+  padding: 6px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Trade Form */
+.trade-form {
+  max-width: 480px;
+}
+
+.trade-form-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+}
+
+.trade-form-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.trade-form-tab.active-buy {
+  background-color: var(--green-bg);
+  color: var(--green);
+}
+
+.trade-form-tab.active-sell {
+  background-color: var(--red-bg);
+  color: var(--red);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--yellow);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+.submit-btn.buy {
+  background-color: var(--green);
+}
+
+.submit-btn.sell {
+  background-color: var(--red);
+}
+
+.submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Trade History */
+.trade-history {
+  padding: 8px;
+}
+
+.trade-history-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 0;
+  color: var(--text-secondary);
+}
+
+.trade-history-header,
+.trade-history-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.trade-history-header {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.trade-history-row {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* Login Page */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-form {
+  width: 360px;
+  padding: 32px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.login-form h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--yellow);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
