@@ -1,33 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Side, OrderType } from '../types';
 import client from '../api/client';
 
 interface TradeFormProps {
   symbol: string;
+  defaultPrice?: string;
 }
 
-export default function TradeForm({ symbol }: TradeFormProps) {
+interface Notification {
+  message: string;
+  type: 'success' | 'error';
+}
+
+export default function TradeForm({ symbol, defaultPrice }: TradeFormProps) {
   const [side, setSide] = useState<Side>(Side.Buy);
   const [orderType, setOrderType] = useState<OrderType>(OrderType.Limit);
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<Notification | null>(null);
+
+  // When user clicks a price in the OrderBook, pre-fill the price field
+  useEffect(() => {
+    if (defaultPrice) {
+      setPrice(defaultPrice);
+      setOrderType(OrderType.Limit);
+    }
+  }, [defaultPrice]);
+
+  // Auto-dismiss notification after 3 seconds
+  useEffect(() => {
+    if (!notification) return;
+    const timer = setTimeout(() => setNotification(null), 3000);
+    return () => clearTimeout(timer);
+  }, [notification]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setNotification(null);
     try {
-      await client.post('/orders', {
+      const res = await client.post('/orders', {
         symbol,
         side,
         order_type: orderType,
         price: orderType === OrderType.Limit ? price : undefined,
         quantity,
       });
+      const orderId = res.data?.id ?? res.data?.order_id ?? '';
+      setNotification({
+        message: `Order placed${orderId ? ` (${orderId.slice(0, 8)}...)` : ''}`,
+        type: 'success',
+      });
       setPrice('');
       setQuantity('');
-    } catch (err) {
-      console.error('Order failed:', err);
+    } catch (err: unknown) {
+      let message = 'Order failed';
+      if (err && typeof err === 'object' && 'response' in err) {
+        const resp = (err as { response?: { data?: { error?: string; message?: string } } }).response;
+        message = resp?.data?.error ?? resp?.data?.message ?? message;
+      }
+      setNotification({ message, type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -35,6 +68,12 @@ export default function TradeForm({ symbol }: TradeFormProps) {
 
   return (
     <form className="trade-form" onSubmit={handleSubmit}>
+      {notification && (
+        <div className={`trade-notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+
       <div className="trade-form-tabs">
         <button
           type="button"
