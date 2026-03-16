@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
+function getApiBase(): string {
+  if (import.meta.env.VITE_API_BASE) return import.meta.env.VITE_API_BASE;
+  // In production, API is on a sibling subdomain (cex-api.*)
+  const host = window.location.hostname;
+  if (host.startsWith('cex.')) {
+    return `${window.location.protocol}//cex-api.${host.slice(4)}/api/v1`;
+  }
+  return '/api/v1';
+}
+const API_BASE = getApiBase();
 
 const client = axios.create({
   baseURL: API_BASE,

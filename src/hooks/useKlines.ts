@@ -2,7 +2,15 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useWebSocket } from './useWebSocket';
 import type { CandleData, Trade } from '../types';
 
-const MARKET_DATA_URL = import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:8081/api/v1';
+function getMarketDataUrl(): string {
+  if (import.meta.env.VITE_MARKET_DATA_URL) return import.meta.env.VITE_MARKET_DATA_URL;
+  const host = window.location.hostname;
+  if (host.startsWith('cex.')) {
+    return `${window.location.protocol}//cex-api.${host.slice(4)}/api/v1`;
+  }
+  return '/api/v1';
+}
+const MARKET_DATA_URL = getMarketDataUrl();
 
 interface UseKlinesResult {
   candles: CandleData[];

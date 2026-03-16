@@ -1,6 +1,15 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws';
+function getWsUrl(): string {
+  if (import.meta.env.VITE_WS_URL) return import.meta.env.VITE_WS_URL;
+  const host = window.location.hostname;
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  if (host.startsWith('cex.')) {
+    return `${proto}//cex-api.${host.slice(4)}/ws`;
+  }
+  return `${proto}//${window.location.host}/ws`;
+}
+const WS_URL = getWsUrl();
 
 interface WsMessage {
   channel: string;
