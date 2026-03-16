@@ -23,7 +23,7 @@ export default function LoginPage() {
         const token = res.data?.token ?? res.data?.access_token;
         if (!token) throw new Error('No token received');
         localStorage.setItem('token', token);
-        navigate('/trade');
+        navigate('/markets');
       } else {
         await client.post('/account/register', { email, password });
         // Auto-login after successful registration
@@ -32,7 +32,7 @@ export default function LoginPage() {
           const token = res.data?.token ?? res.data?.access_token;
           if (!token) throw new Error('No token received');
           localStorage.setItem('token', token);
-          navigate('/trade');
+          navigate('/markets');
         } catch {
           // Registration succeeded but auto-login failed; switch to login tab
           setTab('login');

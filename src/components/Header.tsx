@@ -5,10 +5,9 @@ interface HeaderProps {
   onSymbolChange: (symbol: string) => void;
 }
 
-const symbols = ['BTC-USDT', 'ETH-USDT'];
-
-export default function Header({ symbol, onSymbolChange }: HeaderProps) {
+export default function Header({ symbol }: HeaderProps) {
   const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -16,25 +15,31 @@ export default function Header({ symbol, onSymbolChange }: HeaderProps) {
 
   return (
     <div className="header">
-      <div className="header-logo">MANTIS</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {symbols.map((s) => (
-          <button
-            key={s}
-            className="header-symbol"
-            onClick={() => onSymbolChange(s)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: s === symbol ? 'var(--yellow)' : 'var(--text-secondary)',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: s === symbol ? 700 : 400,
-            }}
-          >
-            {s}
-          </button>
-        ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div
+          className="header-logo"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/markets')}
+        >
+          MANTIS
+        </div>
+        <button
+          onClick={() => navigate('/markets')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            fontSize: '14px',
+          }}
+        >
+          Markets
+        </button>
+        {symbol && (
+          <span style={{ color: 'var(--yellow)', fontWeight: 700, fontSize: '16px' }}>
+            {symbol}
+          </span>
+        )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Testnet</div>

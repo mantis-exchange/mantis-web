@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Header from './components/Header';
 import TradePage from './pages/TradePage';
 import LoginPage from './pages/LoginPage';
+import MarketsPage from './pages/MarketsPage';
 import './styles/trading.css';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -22,23 +23,40 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function App() {
-  const [symbol, setSymbol] = useState('BTC-USDT');
+function TradeRoute() {
+  const { symbol } = useParams<{ symbol: string }>();
+  const navigate = useNavigate();
+  const activeSymbol = symbol || 'BTC-USDT';
 
+  return (
+    <>
+      <Header
+        symbol={activeSymbol}
+        onSymbolChange={(s) => navigate(`/trade/${s}`)}
+      />
+      <TradePage symbol={activeSymbol} />
+    </>
+  );
+}
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/trade"
-          element={
-            <AuthGuard>
-              <Header symbol={symbol} onSymbolChange={setSymbol} />
-              <TradePage symbol={symbol} />
-            </AuthGuard>
-          }
-        />
-        <Route path="*" element={<Navigate to="/trade" replace />} />
+        <Route path="/markets" element={
+          <AuthGuard>
+            <Header symbol="" onSymbolChange={() => {}} />
+            <MarketsPage />
+          </AuthGuard>
+        } />
+        <Route path="/trade/:symbol" element={
+          <AuthGuard>
+            <TradeRoute />
+          </AuthGuard>
+        } />
+        <Route path="/trade" element={<Navigate to="/markets" replace />} />
+        <Route path="*" element={<Navigate to="/markets" replace />} />
       </Routes>
     </BrowserRouter>
   );
