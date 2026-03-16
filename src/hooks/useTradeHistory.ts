@@ -28,7 +28,8 @@ export function useTradeHistory(symbol: string): UseTradeHistoryResult {
       try {
         const res = await client.get(`/trades/${symbol}`);
         if (!mountedRef.current) return;
-        setTrades(res.data.trades ?? res.data ?? []);
+        const list = res.data.trades ?? res.data;
+        setTrades(Array.isArray(list) ? list : []);
         setError(null);
       } catch (err: unknown) {
         if (!mountedRef.current) return;
