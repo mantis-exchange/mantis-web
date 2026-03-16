@@ -70,7 +70,8 @@ export function useKlines(symbol: string, interval: string = '1m'): UseKlinesRes
         const price = parseFloat(trade.price);
         const tradeTime = Math.floor(trade.created_at / 1000);
         // Round down to current candle boundary
-        const intervalSecs = interval === '1m' ? 60 : 300;
+        const intervalMap: Record<string, number> = { '1m': 60, '5m': 300, '15m': 900, '1h': 3600, '4h': 14400, '1d': 86400 };
+        const intervalSecs = intervalMap[interval] || 60;
         const candleTime = tradeTime - (tradeTime % intervalSecs);
 
         setCandles((prev) => {

@@ -10,12 +10,16 @@ import {
 } from 'lightweight-charts';
 import type { CandleData } from '../types';
 
+const INTERVALS = ['1m', '5m', '15m', '1h', '4h', '1d'];
+
 interface ChartProps {
   symbol: string;
   candles: CandleData[];
+  interval: string;
+  onIntervalChange: (interval: string) => void;
 }
 
-export default function Chart({ symbol, candles }: ChartProps) {
+export default function Chart({ symbol, candles, interval, onIntervalChange }: ChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -86,5 +90,34 @@ export default function Chart({ symbol, candles }: ChartProps) {
     chartRef.current?.timeScale().fitContent();
   }, [candles]);
 
-  return <div ref={containerRef} style={{ width: '100%' }} />;
+  return (
+    <div style={{ width: '100%' }}>
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        padding: '8px 8px 4px',
+        background: '#0b0e11',
+      }}>
+        {INTERVALS.map((iv) => (
+          <button
+            key={iv}
+            onClick={() => onIntervalChange(iv)}
+            style={{
+              background: iv === interval ? '#2b3139' : 'transparent',
+              border: 'none',
+              color: iv === interval ? '#f0b90b' : '#848e9c',
+              padding: '4px 10px',
+              borderRadius: 4,
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: iv === interval ? 600 : 400,
+            }}
+          >
+            {iv}
+          </button>
+        ))}
+      </div>
+      <div ref={containerRef} style={{ width: '100%' }} />
+    </div>
+  );
 }

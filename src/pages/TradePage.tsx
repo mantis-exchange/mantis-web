@@ -15,9 +15,10 @@ interface TradePageProps {
 }
 
 export default function TradePage({ symbol }: TradePageProps) {
+  const [interval, setInterval] = useState('1m');
   const { bids, asks } = useOrderBook(symbol);
   const { trades } = useTradeHistory(symbol);
-  const { candles } = useKlines(symbol);
+  const { candles } = useKlines(symbol, interval);
   const { orders, refresh: refreshOrders } = useOrders(symbol);
   const [selectedPrice, setSelectedPrice] = useState('');
 
@@ -28,7 +29,7 @@ export default function TradePage({ symbol }: TradePageProps) {
   return (
     <div className="trading-page">
       <div className="chart-area">
-        <Chart symbol={symbol} candles={candles} />
+        <Chart symbol={symbol} candles={candles} interval={interval} onIntervalChange={setInterval} />
       </div>
       <div className="orderbook-area">
         <OrderBook bids={bids} asks={asks} onPriceClick={handlePriceClick} />
