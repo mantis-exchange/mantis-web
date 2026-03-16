@@ -33,7 +33,8 @@ export function useKlines(symbol: string, interval: string = '1m'): UseKlinesRes
           `${MARKET_DATA_URL}/klines?symbol=${symbol}&interval=${interval}&limit=200`,
         );
         if (!mountedRef.current) return;
-        const data = await res.json();
+        const json = await res.json();
+        const data = Array.isArray(json) ? json : json.klines ?? json;
         if (Array.isArray(data)) {
           const mapped: CandleData[] = data.map(
             (k: { open_time: string; open: string; high: string; low: string; close: string }) => ({

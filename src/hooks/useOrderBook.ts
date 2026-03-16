@@ -3,6 +3,15 @@ import client from '../api/client';
 import { useWebSocket } from './useWebSocket';
 import type { DepthLevel } from '../types';
 
+// Normalize depth data: REST returns [["price","qty"]] arrays, convert to {price, quantity} objects
+function normalizeDepth(levels: unknown): DepthLevel[] {
+  if (!Array.isArray(levels)) return [];
+  return levels.map((lvl: unknown) => {
+    if (Array.isArray(lvl)) return { price: lvl[0], quantity: lvl[1] };
+    return lvl as DepthLevel;
+  });
+}
+
 interface UseOrderBookResult {
   bids: DepthLevel[];
   asks: DepthLevel[];
@@ -27,8 +36,8 @@ export function useOrderBook(symbol: string): UseOrderBookResult {
       try {
         const res = await client.get(`/depth/${symbol}`);
         if (!mountedRef.current) return;
-        setBids(res.data.bids ?? []);
-        setAsks(res.data.asks ?? []);
+        setBids(normalizeDepth(res.data.bids));
+        setAsks(normalizeDepth(res.data.asks));
         setError(null);
       } catch (err: unknown) {
         if (!mountedRef.current) return;
