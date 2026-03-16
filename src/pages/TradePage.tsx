@@ -6,6 +6,7 @@ import TradeHistory from '../components/TradeHistory';
 import BalanceBar from '../components/BalanceBar';
 import { useOrderBook } from '../hooks/useOrderBook';
 import { useTradeHistory } from '../hooks/useTradeHistory';
+import { useKlines } from '../hooks/useKlines';
 
 interface TradePageProps {
   symbol: string;
@@ -14,6 +15,7 @@ interface TradePageProps {
 export default function TradePage({ symbol }: TradePageProps) {
   const { bids, asks } = useOrderBook(symbol);
   const { trades } = useTradeHistory(symbol);
+  const { candles } = useKlines(symbol);
   const [selectedPrice, setSelectedPrice] = useState('');
 
   const handlePriceClick = useCallback((price: string) => {
@@ -23,7 +25,7 @@ export default function TradePage({ symbol }: TradePageProps) {
   return (
     <div className="trading-page">
       <div className="chart-area">
-        <Chart symbol={symbol} />
+        <Chart symbol={symbol} candles={candles} />
       </div>
       <div className="orderbook-area">
         <OrderBook bids={bids} asks={asks} onPriceClick={handlePriceClick} />

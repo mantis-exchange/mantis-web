@@ -1,33 +1,26 @@
 import { useEffect, useRef } from 'react';
-import { createChart, type IChartApi, type UTCTimestamp, ColorType, CandlestickSeries } from 'lightweight-charts';
+import {
+  createChart,
+  type IChartApi,
+  type ISeriesApi,
+  type UTCTimestamp,
+  ColorType,
+  CandlestickSeries,
+  type CandlestickData,
+} from 'lightweight-charts';
+import type { CandleData } from '../types';
 
 interface ChartProps {
   symbol: string;
+  candles: CandleData[];
 }
 
-function generateMockCandles(symbol: string) {
-  const candles = [];
-  const basePrice = symbol.startsWith('BTC') ? 50000 : 3000;
-  let price = basePrice;
-  const now = Math.floor(Date.now() / 1000);
-
-  for (let i = 200; i >= 0; i--) {
-    const time = now - i * 3600;
-    const open = price;
-    const change = (Math.random() - 0.48) * basePrice * 0.01;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * basePrice * 0.005;
-    const low = Math.min(open, close) - Math.random() * basePrice * 0.005;
-    candles.push({ time: time as UTCTimestamp, open, high, low, close });
-    price = close;
-  }
-  return candles;
-}
-
-export default function Chart({ symbol }: ChartProps) {
+export default function Chart({ symbol, candles }: ChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
+  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
 
+  // Create chart once per symbol
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -46,12 +39,8 @@ export default function Chart({ symbol }: ChartProps) {
       },
       width: containerRef.current.clientWidth,
       height: 400,
-      timeScale: {
-        borderColor: '#2b3139',
-      },
-      rightPriceScale: {
-        borderColor: '#2b3139',
-      },
+      timeScale: { borderColor: '#2b3139' },
+      rightPriceScale: { borderColor: '#2b3139' },
     });
 
     const series = chart.addSeries(CandlestickSeries, {
@@ -63,9 +52,8 @@ export default function Chart({ symbol }: ChartProps) {
       wickDownColor: '#f6465d',
     });
 
-    series.setData(generateMockCandles(symbol));
-    chart.timeScale().fitContent();
     chartRef.current = chart;
+    seriesRef.current = series;
 
     const handleResize = () => {
       if (containerRef.current) {
@@ -77,8 +65,26 @@ export default function Chart({ symbol }: ChartProps) {
     return () => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
+      chartRef.current = null;
+      seriesRef.current = null;
     };
   }, [symbol]);
+
+  // Update data when candles change
+  useEffect(() => {
+    if (!seriesRef.current || candles.length === 0) return;
+
+    const data: CandlestickData<UTCTimestamp>[] = candles.map((c) => ({
+      time: c.time as UTCTimestamp,
+      open: c.open,
+      high: c.high,
+      low: c.low,
+      close: c.close,
+    }));
+
+    seriesRef.current.setData(data);
+    chartRef.current?.timeScale().fitContent();
+  }, [candles]);
 
   return <div ref={containerRef} style={{ width: '100%' }} />;
 }
