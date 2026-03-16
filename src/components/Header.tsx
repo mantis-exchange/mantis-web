@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 interface HeaderProps {
   symbol: string;
   onSymbolChange: (symbol: string) => void;
@@ -6,6 +8,12 @@ interface HeaderProps {
 const symbols = ['BTC-USDT', 'ETH-USDT'];
 
 export default function Header({ symbol, onSymbolChange }: HeaderProps) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="header">
       <div className="header-logo">MANTIS</div>
@@ -28,7 +36,23 @@ export default function Header({ symbol, onSymbolChange }: HeaderProps) {
           </button>
         ))}
       </div>
-      <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Testnet</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Testnet</div>
+        <button
+          onClick={handleLogout}
+          style={{
+            background: 'none',
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
+            padding: '4px 12px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontSize: '12px',
+          }}
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }

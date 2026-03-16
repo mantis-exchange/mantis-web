@@ -15,10 +15,14 @@ function App() {
         <Route
           path="/trade"
           element={
-            <>
-              <Header symbol={symbol} onSymbolChange={setSymbol} />
-              <TradePage symbol={symbol} />
-            </>
+            localStorage.getItem('token') ? (
+              <>
+                <Header symbol={symbol} onSymbolChange={setSymbol} />
+                <TradePage symbol={symbol} />
+              </>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
         <Route path="*" element={<Navigate to="/trade" replace />} />

@@ -33,11 +33,19 @@ export default function BalanceBar({ symbol }: BalanceBarProps) {
       try {
         const res = await client.get('/account/balances');
         if (!mountedRef.current) return;
-        const allBalances: Record<string, string> = res.data.balances ?? res.data ?? {};
+        const balanceList = res.data.balances ?? [];
+
+        // Build lookup from array
+        const lookup: Record<string, string> = {};
+        for (const b of balanceList) {
+          if (b.asset && b.available !== undefined) {
+            lookup[b.asset] = b.available;
+          }
+        }
 
         setBalances([
-          { asset: base, available: allBalances[base] ?? '0.00000000' },
-          { asset: quote, available: allBalances[quote] ?? '0.00000000' },
+          { asset: base, available: lookup[base] ?? '0' },
+          { asset: quote, available: lookup[quote] ?? '0' },
         ]);
         setError(null);
       } catch {

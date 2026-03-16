@@ -42,10 +42,10 @@ export default function TradeForm({ symbol, defaultPrice }: TradeFormProps) {
     try {
       const res = await client.post('/orders', {
         symbol,
-        side,
-        order_type: orderType,
+        side: side.toLowerCase(),
+        type: orderType.toLowerCase(),
         price: orderType === OrderType.Limit ? price : undefined,
-        quantity,
+        qty: quantity,
       });
       const orderId = res.data?.id ?? res.data?.order_id ?? '';
       setNotification({

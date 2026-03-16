@@ -20,7 +20,8 @@ export default function LoginPage() {
     try {
       if (tab === 'login') {
         const res = await client.post('/account/login', { email, password });
-        const token = res.data?.token ?? res.data?.access_token ?? 'demo-token';
+        const token = res.data?.token ?? res.data?.access_token;
+        if (!token) throw new Error('No token received');
         localStorage.setItem('token', token);
         navigate('/trade');
       } else {
@@ -28,7 +29,8 @@ export default function LoginPage() {
         // Auto-login after successful registration
         try {
           const res = await client.post('/account/login', { email, password });
-          const token = res.data?.token ?? res.data?.access_token ?? 'demo-token';
+          const token = res.data?.token ?? res.data?.access_token;
+          if (!token) throw new Error('No token received');
           localStorage.setItem('token', token);
           navigate('/trade');
         } catch {
@@ -43,13 +45,7 @@ export default function LoginPage() {
         const resp = (err as { response?: { data?: { error?: string; message?: string } } }).response;
         message = resp?.data?.error ?? resp?.data?.message ?? message;
       }
-      // Fallback: store demo token so the UI is still usable during development
-      if (tab === 'login') {
-        localStorage.setItem('token', 'demo-token');
-        navigate('/trade');
-      } else {
-        setError(message);
-      }
+      setError(message);
     } finally {
       setLoading(false);
     }
