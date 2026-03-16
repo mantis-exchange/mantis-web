@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import client from '../api/client';
+import { useWebSocket } from './useWebSocket';
 import type { DepthLevel } from '../types';
 
 interface UseOrderBookResult {
@@ -16,38 +17,52 @@ export function useOrderBook(symbol: string): UseOrderBookResult {
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
 
+  // Initial REST fetch
   useEffect(() => {
     mountedRef.current = true;
     setLoading(true);
     setError(null);
-    setBids([]);
-    setAsks([]);
 
     const fetchDepth = async () => {
       try {
         const res = await client.get(`/depth/${symbol}`);
         if (!mountedRef.current) return;
-        const data = res.data;
-        setBids(data.bids ?? []);
-        setAsks(data.asks ?? []);
+        setBids(res.data.bids ?? []);
+        setAsks(res.data.asks ?? []);
         setError(null);
       } catch (err: unknown) {
         if (!mountedRef.current) return;
-        const message = err instanceof Error ? err.message : 'Failed to fetch order book';
-        setError(message);
+        setError(err instanceof Error ? err.message : 'Failed to fetch order book');
       } finally {
         if (mountedRef.current) setLoading(false);
       }
     };
 
     fetchDepth();
-    const interval = setInterval(fetchDepth, 1000);
 
     return () => {
       mountedRef.current = false;
-      clearInterval(interval);
     };
   }, [symbol]);
+
+  // WebSocket subscription for real-time updates
+  const subscriptions = useMemo(() => [{ channel: 'depth', symbol }], [symbol]);
+
+  const handleMessage = useCallback(
+    (msg: { channel: string; symbol: string; data: unknown }) => {
+      if (msg.channel === 'depth' && msg.symbol === symbol) {
+        const data = msg.data as { bids?: string[][]; asks?: string[][] };
+        if (data.bids)
+          setBids(data.bids.map(([price, quantity]) => ({ price, quantity })));
+        if (data.asks)
+          setAsks(data.asks.map(([price, quantity]) => ({ price, quantity })));
+        setLoading(false);
+      }
+    },
+    [symbol],
+  );
+
+  useWebSocket(subscriptions, handleMessage);
 
   return { bids, asks, loading, error };
 }

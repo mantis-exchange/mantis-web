@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import client from '../api/client';
+import { useWebSocket } from './useWebSocket';
 import type { Trade } from '../types';
+
+const MAX_TRADES = 50;
 
 interface UseTradeHistoryResult {
   trades: Trade[];
@@ -14,6 +17,7 @@ export function useTradeHistory(symbol: string): UseTradeHistoryResult {
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
 
+  // Initial REST fetch
   useEffect(() => {
     mountedRef.current = true;
     setLoading(true);
@@ -28,21 +32,34 @@ export function useTradeHistory(symbol: string): UseTradeHistoryResult {
         setError(null);
       } catch (err: unknown) {
         if (!mountedRef.current) return;
-        const message = err instanceof Error ? err.message : 'Failed to fetch trades';
-        setError(message);
+        setError(err instanceof Error ? err.message : 'Failed to fetch trades');
       } finally {
         if (mountedRef.current) setLoading(false);
       }
     };
 
     fetchTrades();
-    const interval = setInterval(fetchTrades, 2000);
 
     return () => {
       mountedRef.current = false;
-      clearInterval(interval);
     };
   }, [symbol]);
+
+  // WebSocket subscription for real-time updates
+  const subscriptions = useMemo(() => [{ channel: 'trades', symbol }], [symbol]);
+
+  const handleMessage = useCallback(
+    (msg: { channel: string; symbol: string; data: unknown }) => {
+      if (msg.channel === 'trades' && msg.symbol === symbol) {
+        const trade = msg.data as Trade;
+        setTrades((prev) => [trade, ...prev].slice(0, MAX_TRADES));
+        setLoading(false);
+      }
+    },
+    [symbol],
+  );
+
+  useWebSocket(subscriptions, handleMessage);
 
   return { trades, loading, error };
 }
