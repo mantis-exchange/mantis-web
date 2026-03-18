@@ -42,7 +42,7 @@ export default function MarketsPage() {
   const arrow = (key: string) => sortKey === key ? (sortAsc ? ' ↑' : ' ↓') : '';
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div style={{ minHeight: 'calc(100vh - 48px)', background: 'var(--bg-secondary)' }}>
       {/* Title bar */}
       <div style={{ padding: '32px 48px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
@@ -82,7 +82,7 @@ export default function MarketsPage() {
             <col style={{ width: '10%' }} />
           </colgroup>
           <thead>
-            <tr style={{ background: 'var(--bg-secondary)', borderRadius: 8 }}>
+            <tr style={{ background: 'var(--bg-tertiary)' }}>
               {[
                 { label: '#', align: 'left', key: null, w: undefined },
                 { label: 'Name', align: 'left', key: 'symbol' },
