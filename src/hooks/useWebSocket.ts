@@ -35,6 +35,7 @@ const connectedListeners = new Set<(v: boolean) => void>();
 function notifyConnected(v: boolean) {
   connectedState = v;
   connectedListeners.forEach((fn) => fn(v));
+  window.dispatchEvent(new Event(v ? 'mantis:ws-connected' : 'mantis:ws-disconnected'));
 }
 
 function getOrCreateWs(): WebSocket {

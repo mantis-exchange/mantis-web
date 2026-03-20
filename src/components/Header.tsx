@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import WsIndicator from './WsIndicator';
 
 interface HeaderProps {
   symbol: string;
@@ -42,7 +43,27 @@ export default function Header({ symbol }: HeaderProps) {
         )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <WsIndicator />
         <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Testnet</div>
+        <button
+          onClick={() => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+          }}
+          style={{
+            background: 'none',
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
+            padding: '4px 12px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontSize: '12px',
+          }}
+        >
+          {typeof window !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light' ? '🌙' : '☀️'}
+        </button>
         <button
           onClick={handleLogout}
           style={{

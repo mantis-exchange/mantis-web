@@ -40,6 +40,12 @@ function TradeRoute() {
 }
 
 function App() {
+  // Initialize theme from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

@@ -32,7 +32,7 @@ export default function TradePage({ symbol }: TradePageProps) {
         <Chart symbol={symbol} candles={candles} interval={interval} onIntervalChange={setInterval} />
       </div>
       <div className="orderbook-area">
-        <OrderBook bids={bids} asks={asks} onPriceClick={handlePriceClick} />
+        <OrderBook bids={bids} asks={asks} symbol={symbol} onPriceClick={handlePriceClick} />
       </div>
       <div className="trade-form-area">
         <BalanceBar symbol={symbol} />
