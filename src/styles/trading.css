@@ -409,3 +409,104 @@ body {
   color: var(--red);
   border: 1px solid var(--red);
 }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .trading-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .chart-area {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 300px;
+  }
+
+  .orderbook-area {
+    grid-column: 1;
+    grid-row: 2;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .trade-form-area {
+    grid-column: 1;
+    grid-row: 3;
+    padding: 12px;
+  }
+
+  .open-orders-area {
+    grid-column: 1;
+    grid-row: 4;
+    max-height: 200px;
+  }
+
+  .trade-history-area {
+    grid-column: 1;
+    grid-row: 5;
+    max-height: 200px;
+  }
+
+  .header {
+    padding: 0 12px;
+    height: 44px;
+  }
+
+  .header-logo {
+    font-size: 16px;
+  }
+
+  .trade-form {
+    max-width: 100%;
+  }
+
+  .orderbook-row,
+  .orderbook-header {
+    font-size: 12px;
+  }
+
+  .trade-history-row,
+  .trade-history-header {
+    font-size: 11px;
+    grid-template-columns: 1fr 1fr 0.6fr 1fr;
+  }
+
+  .balance-bar-items {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .submit-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+
+  .login-form {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .orderbook-header,
+  .orderbook-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .orderbook-row span:nth-child(3) {
+    display: none;
+  }
+
+  .orderbook-header span:nth-child(3) {
+    display: none;
+  }
+}
