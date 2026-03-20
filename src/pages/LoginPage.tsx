@@ -54,7 +54,10 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h2>MANTIS</h2>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--yellow)', letterSpacing: 2 }}>MANTIS</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>Cryptocurrency Exchange</div>
+        </div>
 
         <div className="login-tabs">
           <button

@@ -29,6 +29,14 @@ function formatType(t: string): string {
   return t.replace('ORDER_TYPE_', '');
 }
 
+function timeAgo(ts: number): string {
+  const secs = Math.floor((Date.now() - ts) / 1000);
+  if (secs < 60) return `${secs}s ago`;
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+  return `${Math.floor(secs / 86400)}d ago`;
+}
+
 export default function OpenOrders({ orders, onCancel }: OpenOrdersProps) {
   const handleCancel = async (orderId: string, symbol: string) => {
     try {
@@ -80,7 +88,7 @@ export default function OpenOrders({ orders, onCancel }: OpenOrdersProps) {
             <span>{o.filled_quantity}</span>
             <span style={{ color: 'var(--yellow)' }}>{formatStatus(o.status)}</span>
             <span style={{ color: 'var(--text-secondary)' }}>
-              {new Date(o.created_at).toLocaleTimeString()}
+              {timeAgo(o.created_at)}
             </span>
             <span>
               <button
@@ -122,7 +130,7 @@ export default function OpenOrders({ orders, onCancel }: OpenOrdersProps) {
                 {formatStatus(o.status)}
               </span>
               <span style={{ color: 'var(--text-secondary)' }}>
-                {new Date(o.created_at).toLocaleTimeString()}
+                {timeAgo(o.created_at)}
               </span>
               <span></span>
             </div>

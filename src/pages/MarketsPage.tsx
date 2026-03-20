@@ -52,6 +52,47 @@ export default function MarketsPage() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 48px)', background: 'var(--bg-secondary)' }}>
+      {/* Scrolling ticker tape */}
+      {filtered.length > 0 && (
+        <div style={{
+          overflow: 'hidden',
+          borderBottom: '1px solid var(--border)',
+          padding: '8px 0',
+          whiteSpace: 'nowrap',
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            gap: 32,
+            animation: 'ticker-scroll 60s linear infinite',
+            paddingLeft: '100%',
+          }}>
+            {[...filtered, ...filtered].map((s, i) => {
+              const change = parseFloat(s.change_24h || '0');
+              const positive = change >= 0;
+              return (
+                <span
+                  key={`ticker-${i}`}
+                  onClick={() => navigate(`/trade/${s.symbol}`)}
+                  style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13 }}
+                >
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{s.base}</span>
+                  <span style={{ fontFamily: "'SF Mono','Fira Code',monospace", color: 'var(--text-primary)' }}>
+                    ${parseFloat(s.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                  </span>
+                  <span style={{
+                    color: positive ? 'var(--green)' : 'var(--red)',
+                    fontSize: 12,
+                    fontWeight: 500,
+                  }}>
+                    {positive ? '+' : ''}{s.change_24h || '0.00'}%
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Title bar */}
       <div style={{ padding: '32px 48px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
