@@ -79,6 +79,30 @@ export default function BalanceBar({ symbol }: BalanceBarProps) {
           </div>
         ))}
       </div>
+      {balances.every(b => b.available === '0' || b.available === '--') && (
+        <button
+          onClick={async () => {
+            try {
+              await client.post('/faucet');
+              setTimeout(() => window.location.reload(), 500);
+            } catch {}
+          }}
+          style={{
+            marginTop: 8,
+            background: 'var(--yellow)',
+            border: 'none',
+            color: '#0b0e11',
+            padding: '6px 16px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            width: '100%',
+          }}
+        >
+          Get Testnet Funds
+        </button>
+      )}
     </div>
   );
 }
