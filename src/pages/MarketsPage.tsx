@@ -7,6 +7,10 @@ interface SymbolInfo {
   base: string;
   quote: string;
   price: string;
+  change_24h?: string;
+  high_24h?: string;
+  low_24h?: string;
+  volume_24h?: string;
 }
 
 export default function MarketsPage() {
@@ -17,9 +21,14 @@ export default function MarketsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    client.get('/symbols')
-      .then((res) => setSymbols(res.data.symbols || []))
-      .catch(() => {});
+    const fetchSymbols = () => {
+      client.get('/symbols')
+        .then((res) => setSymbols(res.data.symbols || []))
+        .catch(() => {});
+    };
+    fetchSymbols();
+    const interval = setInterval(fetchSymbols, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSort = (key: 'symbol' | 'price') => {
@@ -113,9 +122,9 @@ export default function MarketsPage() {
           </thead>
           <tbody>
             {filtered.map((s, i) => {
-              const change = ((Math.sin(s.base.charCodeAt(0) * 13.7) * 8)).toFixed(2);
+              const change = s.change_24h || '0.00';
               const isPositive = parseFloat(change) >= 0;
-              const volume = (parseFloat(s.price) * (500 + s.base.charCodeAt(0) * 100)).toLocaleString(undefined, { maximumFractionDigits: 0 });
+              const volume = parseFloat(s.volume_24h || '0').toLocaleString(undefined, { maximumFractionDigits: 2 });
 
               return (
                 <tr
