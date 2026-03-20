@@ -47,11 +47,15 @@ export default function TradeForm({ symbol, defaultPrice }: TradeFormProps) {
         price: orderType === OrderType.Limit ? price : undefined,
         qty: quantity,
       });
+      const trades = res.data?.trades;
       const orderId = res.data?.id ?? res.data?.order_id ?? '';
-      setNotification({
-        message: `Order placed${orderId ? ` (${orderId.slice(0, 8)}...)` : ''}`,
-        type: 'success',
-      });
+      let message = `Order placed`;
+      if (orderId) message += ` (${orderId.slice(0, 8)}...)`;
+      if (trades && trades.length > 0) {
+        message += ` — ${trades.length} fill${trades.length > 1 ? 's' : ''}`;
+      }
+      setNotification({ message, type: 'success' });
+      window.dispatchEvent(new Event('mantis:balance-refresh'));
       setPrice('');
       setQuantity('');
     } catch (err: unknown) {
@@ -127,6 +131,26 @@ export default function TradeForm({ symbol, defaultPrice }: TradeFormProps) {
           required
         />
       </div>
+
+      {orderType === OrderType.Limit && price && quantity && (
+        <div style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '8px 0', borderTop: '1px solid var(--border)', marginTop: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span>Total</span>
+            <span style={{ color: 'var(--text-primary)', fontFamily: "'SF Mono','Fira Code',monospace" }}>
+              {(parseFloat(price) * parseFloat(quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {symbol.split('-')[1]}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+            <span>Fee (est. 0.2%)</span>
+            <span style={{ fontFamily: "'SF Mono','Fira Code',monospace" }}>
+              {side === Side.Buy
+                ? (parseFloat(quantity) * 0.002).toFixed(6) + ' ' + symbol.split('-')[0]
+                : (parseFloat(price) * parseFloat(quantity) * 0.002).toFixed(2) + ' ' + symbol.split('-')[1]
+              }
+            </span>
+          </div>
+        </div>
+      )}
 
       <button
         type="submit"

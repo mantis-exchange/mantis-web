@@ -61,9 +61,13 @@ export default function BalanceBar({ symbol }: BalanceBarProps) {
     fetchBalances();
     const interval = setInterval(fetchBalances, 5000);
 
+    const handleRefresh = () => fetchBalances();
+    window.addEventListener('mantis:balance-refresh', handleRefresh);
+
     return () => {
       mountedRef.current = false;
       clearInterval(interval);
+      window.removeEventListener('mantis:balance-refresh', handleRefresh);
     };
   }, [base, quote]);
 
