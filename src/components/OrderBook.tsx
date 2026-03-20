@@ -26,6 +26,13 @@ export default function OrderBook({ bids, asks, symbol, onPriceClick }: OrderBoo
     });
   }, [bids, symbol]);
 
+  const maxAskCum = asksWithCumulative.length > 0
+    ? parseFloat(asksWithCumulative[asksWithCumulative.length - 1].cumulative)
+    : 1;
+  const maxBidCum = bidsWithCumulative.length > 0
+    ? parseFloat(bidsWithCumulative[bidsWithCumulative.length - 1].cumulative)
+    : 1;
+
   const spread = useMemo(() => {
     if (asks.length > 0 && bids.length > 0) {
       const bestAsk = parseFloat(asks[0].price);
@@ -49,6 +56,9 @@ export default function OrderBook({ bids, asks, symbol, onPriceClick }: OrderBoo
           key={`ask-${i}`}
           className="orderbook-row"
           onClick={() => onPriceClick?.(level.price)}
+          style={{
+            background: `linear-gradient(to left, var(--red-bg) ${(parseFloat(level.cumulative) / maxAskCum * 100).toFixed(0)}%, transparent ${(parseFloat(level.cumulative) / maxAskCum * 100).toFixed(0)}%)`,
+          }}
         >
           <span className="price-ask">{formatPrice(level.price, symbol)}</span>
           <span className="text-right">{formatQty(level.quantity, symbol)}</span>
@@ -63,6 +73,9 @@ export default function OrderBook({ bids, asks, symbol, onPriceClick }: OrderBoo
           key={`bid-${i}`}
           className="orderbook-row"
           onClick={() => onPriceClick?.(level.price)}
+          style={{
+            background: `linear-gradient(to left, var(--green-bg) ${(parseFloat(level.cumulative) / maxBidCum * 100).toFixed(0)}%, transparent ${(parseFloat(level.cumulative) / maxBidCum * 100).toFixed(0)}%)`,
+          }}
         >
           <span className="price-bid">{formatPrice(level.price, symbol)}</span>
           <span className="text-right">{formatQty(level.quantity, symbol)}</span>
