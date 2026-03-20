@@ -63,8 +63,7 @@ export default function MarketsPage() {
           <div style={{
             display: 'inline-flex',
             gap: 32,
-            animation: 'ticker-scroll 60s linear infinite',
-            paddingLeft: '100%',
+            animation: 'ticker-scroll 30s linear infinite',
           }}>
             {[...filtered, ...filtered].map((s, i) => {
               const change = parseFloat(s.change_24h || '0');
